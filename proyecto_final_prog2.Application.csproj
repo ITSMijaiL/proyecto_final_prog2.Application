@@ -13,6 +13,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Refit.HttpClientFactory" Version="7.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\proyecto_final_prog2.Domain\proyecto_final_prog2.Domain.csproj" />
+    <ProjectReference Include="..\proyecto_final_prog2.Infrastructure\proyecto_final_prog2.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
