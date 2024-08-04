@@ -29,7 +29,8 @@ namespace proyecto_final_prog2.Application
         [Get("/api/Tags")]
         public Task<List<Domain.Entities.Tag>> GetTags();
         [Get("/api/Tags/{id}")]
-        public Task<IndexTagDto?> GetTag(int id);
+        //public Task<IndexTagDto?> GetTag(int id);
+        public Task<List<Domain.Entities.Tag>> GetTagsFromTask(int id);
         [Post("/api/Tags")]
         public Task CreateTag([Body] TagModel tagModel);
         [Put("/api/Tags/{id}")]
@@ -41,7 +42,8 @@ namespace proyecto_final_prog2.Application
         [Get("/api/Tasks")]
         public Task<List<Domain.Entities.Task>> GetTasks();
         [Get("/api/Tasks/{id}")]
-        public Task<IndexTaskDto?> GetTasksFromColumn(int id);
+        //public Task<IndexTaskDto?> GetTask(int id);
+        public Task<List<Domain.Entities.Task>> GetTasksFromColumn(int id);
         [Post("/api/Tasks")]
         public Task CreateTask([Body] TaskModel taskModel);
         [Put("/api/Tasks/{id}")]

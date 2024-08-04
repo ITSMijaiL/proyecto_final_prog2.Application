@@ -26,7 +26,12 @@ namespace proyecto_final_prog2.Application.Services
 
         public async Task<List<Domain.Entities.Task>> GetTasksFromColumn(int id)
         {
-            return (await _context.columns.FirstOrDefaultAsync(x => x.ID == id)).tasks;
+            Column? col = await _context.columns.FirstOrDefaultAsync(x => x.ID == id);
+            List<Domain.Entities.Task> res = new List<Domain.Entities.Task>();
+            if (col!=null) {
+                res = await _context.tasks.Where(x => x.ColumnID == id).ToListAsync();
+            }
+            return res;
         }
 
         public async Task<Domain.Entities.Task?> GetTaskFromDB(int id)
@@ -53,9 +58,10 @@ namespace proyecto_final_prog2.Application.Services
                 text = taskModel.text
             };
 
+            task.ColumnID = column_id;
             await _context.tasks.AddAsync(task);
-            c.tasks.Add(task);
-            _context.columns.Update(c);
+            //c.tasks.Add(task);
+            //_context.columns.Update(c);
             await _context.SaveChangesAsync();
             return task;
         }

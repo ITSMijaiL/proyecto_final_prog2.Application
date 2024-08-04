@@ -40,19 +40,36 @@ namespace proyecto_final_prog2.Application.Services
             return null;
         }
 
+        public async Task<List<Tag>> GetTagsFromTask(int id)
+        {
+            Domain.Entities.Task? tsk = await _context.tasks.Include(t => t.tags).AsNoTracking().FirstOrDefaultAsync(x => x.ID == id);
+            List<Tag> res = new List<Tag>();
+
+            if (tsk != null)
+            {
+                return tsk.tags.ToList();
+            }
+            return new List<Tag>(); //esto es lo que la falta de tiempo hace xD
+        }
+        
+
         public async Task<bool> TagExistsByName(string name)
         {
             return (await _context.tags.AnyAsync(t => t.tag_name == name));
         }
 
-        public async Task<Tag> CreateTag(CreateTagDto tagModel)
+        public async Task<Tag> CreateTag(CreateTagDto tagModel, int task_id)
         {
+            Domain.Entities.Task? tsk = await _context.tasks.FirstOrDefaultAsync(x=>x.ID==task_id);
+            //Domain.Entities.Task? tsk = await _context.tasks.Include(t => t.tags).AsNoTracking().FirstOrDefaultAsync(x => x.ID == task_id);
             Tag tag = new Tag
             {
                 tag_name = tagModel.tag_name
             };
-
-            await _context.tags.AddAsync(tag);
+            tsk.tags.Add(tag);
+            /*tag.tasks.Add(tsk);
+            _context.tasks.Update(tsk);
+            await _context.tags.AddAsync(tag);*/
             await _context.SaveChangesAsync();
             return tag;
         }
