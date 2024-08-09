@@ -19,6 +19,10 @@ namespace proyecto_final_prog2.Application
         public Task<List<Domain.Entities.Column>> GetColumns();
         [Get("/api/Columns/{id}")]
         public Task<IndexColumnDto?> GetColumn(int id);
+
+        [Get("/api/Columns/ID/{title}")]
+        public Task<int?> GetColumnIDUsingTitle(string title);
+
         [Post("/api/Columns")]
         public Task CreateColumn([Body] ColumnModel columnModel);
         [Put("/api/Columns/{id}")]
@@ -35,17 +39,23 @@ namespace proyecto_final_prog2.Application
         public Task CreateTag([Body] TagModel tagModel);
         [Put("/api/Tags/{id}")]
         public Task UpdateTag(int id, [Body] TagModel tagModel);
+        [Put("/api/Tags/Link/{task_id}/{tag_id}")]
+        public Task LinkTag(int task_id, int tag_id);
         [Delete("/api/Tags/{id}")]
         public Task DeleteTag(int id);
+        [Delete("/api/Tags/{task_id}/{tag_id}")]
+        public Task UnlinkTag(int task_id, int tag_id);
 
 
         [Get("/api/Tasks")]
         public Task<List<Domain.Entities.Task>> GetTasks();
+        [Get("/api/ID/Tasks/{title}")]
+        public Task<int?> GetTaskIDUsingTitle(string title);
         [Get("/api/Tasks/{id}")]
         //public Task<IndexTaskDto?> GetTask(int id);
         public Task<List<Domain.Entities.Task>> GetTasksFromColumn(int id);
-        [Post("/api/Tasks")]
-        public Task CreateTask([Body] TaskModel taskModel);
+        [Post("/api/Tasks/{column_name}")]
+        public Task CreateTask([Body] TaskModel taskModel, string column_name);
         [Put("/api/Tasks/{id}")]
         public Task UpdateTask(int id, [Body] TaskModel taskModel);
         [Delete("/api/Tasks/{id}")]

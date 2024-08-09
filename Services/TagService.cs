@@ -58,18 +58,19 @@ namespace proyecto_final_prog2.Application.Services
             return (await _context.tags.AnyAsync(t => t.tag_name == name));
         }
 
-        public async Task<Tag> CreateTag(CreateTagDto tagModel, int task_id)
+        public async Task<Tag> CreateTag(CreateTagDto tagModel)
         {
-            Domain.Entities.Task? tsk = await _context.tasks.FirstOrDefaultAsync(x=>x.ID==task_id);
+            //Domain.Entities.Task? tsk = await _context.tasks.FirstOrDefaultAsync(x=>x.ID==task_id);
             //Domain.Entities.Task? tsk = await _context.tasks.Include(t => t.tags).AsNoTracking().FirstOrDefaultAsync(x => x.ID == task_id);
             Tag tag = new Tag
             {
                 tag_name = tagModel.tag_name
             };
-            tsk.tags.Add(tag);
+            await _context.tags.AddAsync(tag);
+            //tsk.tags.Add(tag);
             /*tag.tasks.Add(tsk);
             _context.tasks.Update(tsk);
-            await _context.tags.AddAsync(tag);*/
+            */
             await _context.SaveChangesAsync();
             return tag;
         }
@@ -92,6 +93,38 @@ namespace proyecto_final_prog2.Application.Services
             if (tag != null)
             {
                 _context.tags.Remove(tag);
+            }
+            await _context.SaveChangesAsync();
+            return tag;
+        }
+
+        public async Task<Tag?> LinkTag(int task_id, int tag_id)
+        {
+            Tag? tag = await GetTagFromDB(tag_id);
+            Domain.Entities.Task? task = await _context.tasks.FirstOrDefaultAsync(x => x.ID == task_id);
+            if (tag != null && task != null && task.tags.Where(x => x.ID == tag_id).Count()==0)
+            {
+                task.tags.Add(tag);
+            }
+            await _context.SaveChangesAsync();
+            return tag;
+        }
+
+        public async Task<Tag?> UnlinkTag(int task_id, int tag_id)
+        {
+            Tag? tag = await GetTagFromDB(tag_id);
+            Domain.Entities.Task? task = await _context.tasks.FirstOrDefaultAsync(x => x.ID == task_id);
+            Tag? tag_to_del = null;
+            if (task != null) { 
+                _context.Entry(task).Collection(t => t.tags).Load();
+                tag_to_del = task.tags.FirstOrDefault(tag => tag.ID == tag_id);
+            }
+            if (tag != null && task != null && tag_to_del != null)
+            {
+                //tag.tasks.Remove(task);
+                //_context.tags.Update(tag);
+                task.tags.Remove(tag_to_del);
+                //_context.tasks.Update(task);
             }
             await _context.SaveChangesAsync();
             return tag;

@@ -30,6 +30,10 @@ namespace proyecto_final_prog2.Application.Services
         {
             return await _context.columns.FirstOrDefaultAsync(c => c.ID == id);
         }
+        public async Task<Column?> GetColumnFromDBUsingTitle(string title)
+        {
+            return await _context.columns.FirstOrDefaultAsync(c => c.column_title == title);
+        }
 
         public async Task<IndexColumnDto?> GetColumn(int id)
         {
@@ -37,6 +41,16 @@ namespace proyecto_final_prog2.Application.Services
             if (col != null)
             {
                 return new IndexColumnDto { ID=id, column_title = col.column_title };
+            }
+            return null;
+        }
+
+        public async Task<int?> GetColumnID(string title)
+        {
+            Column col = await GetColumnFromDBUsingTitle(title);
+            if (col != null)
+            {
+                return col.ID;
             }
             return null;
         }
@@ -71,6 +85,7 @@ namespace proyecto_final_prog2.Application.Services
             Column? column = await GetColumnFromDB(id);
             if (column != null)
             {
+                _context.tasks.RemoveRange(_context.tasks.Where(x=>x.ColumnID==id).ToList());
                 _context.columns.Remove(column);
             }
             await _context.SaveChangesAsync();

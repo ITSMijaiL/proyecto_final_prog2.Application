@@ -39,6 +39,11 @@ namespace proyecto_final_prog2.Application.Services
             return await _context.tasks.FirstOrDefaultAsync(t => t.ID == id);
         }
 
+        public async Task<Domain.Entities.Task?> GetTaskFromDBUsingTitle(string title)
+        {
+            return await _context.tasks.FirstOrDefaultAsync(c => c.title == title);
+        }
+
         public async Task<IndexTaskDto?> GetTask(int id)
         {
             Domain.Entities.Task? task = await GetTaskFromDB(id);
@@ -49,20 +54,44 @@ namespace proyecto_final_prog2.Application.Services
             return null;
         }
 
-        public async Task<Domain.Entities.Task> CreateTask(CreateTaskDto taskModel, int column_id)
+        public async Task<int?> GetTaskID(string title)
         {
-            Column? c = await _context.columns.FirstOrDefaultAsync(x => x.ID == column_id);
+            Domain.Entities.Task? task = await GetTaskFromDBUsingTitle(title);
+            if (task != null)
+            {
+                return task.ID;
+            }
+            return null;
+        }
+
+        //
+
+        public async Task<Domain.Entities.Task> CreateTask(CreateTaskDto taskModel, string column_name)
+        {
+            Column? c = await _context.columns.FirstOrDefaultAsync(x => x.column_title == column_name);
             Domain.Entities.Task task = new Domain.Entities.Task
             {
                 title = taskModel.title,
                 text = taskModel.text
             };
 
-            task.ColumnID = column_id;
+            task.ColumnID = c.ID;
             await _context.tasks.AddAsync(task);
             //c.tasks.Add(task);
             //_context.columns.Update(c);
             await _context.SaveChangesAsync();
+            return task;
+        }
+
+        public async Task<Domain.Entities.Task?> UpdateTaskColumn(int id, int column_id)
+        {
+            Domain.Entities.Task? task = await GetTaskFromDB(id);
+            if (task != null)
+            {
+                task.ColumnID = column_id;
+                _context.tasks.Update(task);
+                await _context.SaveChangesAsync();
+            }
             return task;
         }
 
